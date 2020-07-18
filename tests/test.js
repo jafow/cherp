@@ -52,6 +52,18 @@ test('it should add a license', async function (t) {
   t.end()
 })
 
+test('test openAssignedIssue', async function (t) {
+  t.plan(2)
+  var cherp = new Cherp({ githubOrg: 'testcherp' })
+
+  var stubCreateIssue = sinon.stub(cherp.issues, 'create')
+  stubCreateIssue.returns(require('./stubs/create-issue.json'))
+
+  var test0 = await cherp.openAssignedIssue(repo='Hello-World', assignee='octocat', {title: 'Found a bug', body: 'I\'m having a problem with this.'})
+  t.equal(test0.issueNumber, 1347, 'it returns the issue number')
+  t.equal(test0.assigned, 'octocat', 'it returns the assignee')
+})
+
 test('test CLI', function (t) {
   t.plan(6)
   cp.exec(`${CMD} -h`, (err, result) => {
