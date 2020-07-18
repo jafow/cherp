@@ -1,0 +1,43 @@
+{
+  "name": "cherp",
+  "version": "0.1.0-alpha.2",
+  "description": "utilities for checking github repos look their best",
+  "dependencies": {
+    "@octokit/rest": "^18.0.0",
+    "dotenv": "^8.2.0",
+    "minimist": "^1.2.5",
+    "spdx-license-list": "^6.2.0"
+  },
+  "devDependencies": {
+    "sinon": "^9.0.2",
+    "standard": "^14.3.4",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.0.1"
+  },
+  "files": [
+    "cherp",
+    "src/*",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "bin": {
+    "cherp": "./cherp"
+  },
+  "scripts": {
+    "test": "node tests/test.js | tap-spec",
+    "start": "./cherp",
+    "lint": "npx standard -- "
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/100Automations/cherp"
+  },
+  "keywords": [
+    "github",
+    "octokit"
+  ],
+  "author": "Jared Fowler - jared.a.fowler@gmail.com",
+  "license": "GPL-2.0"
+}
