@@ -361,7 +361,7 @@ class Cherp extends CherpOctokit {
      * @param members - Array; a list of members objects as {login: String, url: String}
      * @returns Object; a key/value pair of { memberLogin: [list of repos they are members of]}
      */
-    LOGGER.debug('Checking members: ${members} are collaborators on organziations repos')
+    LOGGER.debug(`Checking members: ${members} are collaborators on organziations repos`)
     const orgReposCollaborators = await this.orgReposCollaborators()
     const result = {}
 
@@ -400,7 +400,7 @@ class Cherp extends CherpOctokit {
 }
 
 // throttling behaviors for rate limits
-function onRateLimit (retryAfter, opts, octokit) {
+function onRateLimit (retryAfter, options, octokit) {
   octokit.log.warn(`Request quota exhausted for request ${options.method} ${options.url}`)
 
   if (options.request.retryCount === 0) { // only retries once
@@ -409,7 +409,7 @@ function onRateLimit (retryAfter, opts, octokit) {
   }
 }
 
-function onAbuseLimit (retryAfter, opts, octokit) {
+function onAbuseLimit (retryAfter, options, octokit) {
   octokit.log.warn(`Abuse detected for request ${options.method} ${options.url}`)
 }
 
