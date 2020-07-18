@@ -8,7 +8,7 @@ const LOGGER = {
   info: (msg) => parseInt(process.env.LOG_LEVEL, 10) >= 40 ? console.log(msg) : noop(),
   warn: (msg) => parseInt(process.env.LOG_LEVEL, 10) >= 30 ? console.warn(msg) : noop(),
   error: (msg, err) => {
-    console.error(`${msg}; name: ${err.name || ''}, status: ${err.status}, msg: ${err.message}`)
+    console.error(`${msg}; name: ${err.name || ''}, status: ${err.status}, msg: ${err.message || 'Something went wrong'}`)
   }
 }
 
