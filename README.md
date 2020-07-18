@@ -57,6 +57,13 @@ opens a PR to my-repo with a GPL-2.0 license
 ### `cherp license`
 check all repos in `GITHUB_ORG` that do not have a recognizable LICENSE file
 
+### `cherp version`
+prints the version
+
+### `cherp mfa`
+lists any members of the `GITHUB_ORG` that have not enabled 2fa. Returns an
+empty Array if none exist.
+
 # LICENSE
 GPL-2.0
 hackforla © 2020
