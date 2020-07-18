@@ -284,6 +284,34 @@ class Cherp extends Octokit {
       })
       return membersMissing2fa
   }
+
+  reposThatMembersBelongTo (members) {
+    /**
+     * given a list of members, for each member return a list of repos
+     * that they are members of within the `GITHUB_ORG`
+     * @param members - Array; a list of members objects as {login: String, url: String}
+     * @returns Object; a key/value pair of { memberLogin: [list of repos they are members of]}
+     */
+    let orgRepos = this.paginate(this.orgs.listRepos, {
+        org: this.owner,
+        sort: 'updated'
+      },
+      (repos) => repos.data.map(repo => ({
+        name: repo.name,
+        full_name: repo.full_name,
+        issues_url: repo.issues_url,
+        default_branch: repo.default_branch,
+        collaborators_url: repo.collaborators_url
+      })))
+      .then((repos) => {
+        LOGGER.debug(`Found ${repos.length} belonging to this github org`)
+        return repos
+      })
+      .catch((err) => {
+        LOGGER.error('Error: reposThatMembersBelongTo', err)
+        return []
+      })
+  }
 }
 
 module.exports = Cherp
