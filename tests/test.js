@@ -4,7 +4,7 @@ const cp = require('child_process')
 const path = require('path')
 const Cherp = require('../src/repo')
 
-const CMD_PATH = path.resolve(__dirname, '..', 'cherp.js')
+const CMD_PATH = path.resolve(__dirname, '..', 'cherp')
 const CMD = `node ${CMD_PATH}`
 
 test('it should boot', (t) => {
