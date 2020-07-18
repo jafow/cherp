@@ -267,6 +267,23 @@ class Cherp extends Octokit {
       return err
     }
   }
+
+  membersMissing2fa () {
+      let membersMissing2fa = this.paginate(this.orgs.listMembers, {
+        org: this.owner,
+        filter: '2fa_disabled'
+      },
+      (members) => members.data.map(member => ({login: member.login, url: member.url, html_url: member.html_url })))
+      .then((members) => {
+        LOGGER.debug(`Found ${members.length} without 2fa`)
+        return members
+      })
+      .catch((err) => {
+        LOGGER.error('Error: membersMissing2fa', err)
+        return []
+      })
+      return membersMissing2fa
+  }
 }
 
 module.exports = Cherp
