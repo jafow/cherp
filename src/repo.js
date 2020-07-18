@@ -310,10 +310,66 @@ class Cherp extends CherpOctokit {
         return repos
       })
       .catch((err) => {
-        LOGGER.error('Error: reposThatMembersBelongTo', err)
+        LOGGER.error('Error: _orgRepos', err)
         return []
       })
   }
+
+  _mapOrgReposAndCollaborators (orgRepos) {
+    /**
+     * close over organization repos list
+     * and return function for handling resolve promise
+     * of all repos collaborators
+     * @param orgRepos - Array
+     * @returns function
+     */
+    const result = {}
+    return function (allRepoCollaborators) {
+      for (let i = 0; i < orgRepos.length; i++) {
+        // zip them with org repos
+        result[orgRepos[i].name] = allReposCollaborators[i].map(collaborator => collaborator.login)
+      }
+      return result
+    }
+  }
+
+  async orgReposCollaborators () {
+    /**
+     * a key value pair of repos and their collaborators belonging to a github org
+     */
+    const orgRepos = await this._orgRepos()
+    const promises = []
+    const result = {}
+
+    for (let repo of orgRepos) {
+      let p = this.paginate('GET /repos/{owner}/{repo}/collaborators', {
+        owner: this.owner,
+        repo: repo.name
+      })
+      promises.push(p)
+    }
+    return Promise.all(promises)
+      .then(allReposCollaborators => {
+        for (let i = 0; i < orgRepos.length; i++) {
+          // zip them with org repos
+          result[orgRepos[i].name] = allReposCollaborators[i].map(collaborator => collaborator.login)
+        }
+        return result
+      })
+      .catch((err) => {
+        LOGGER.error('Error: orgReposCollaborators', err)
+        return []
+      })
+  }
+
+  reposThatMembersBelongTo (members) {
+    /**
+     * given a list of members, for each member return a list of repos
+     * that they are members of within the `GITHUB_ORG`
+     * @param members - Array; a list of members objects as {login: String, url: String}
+     * @returns Object; a key/value pair of { memberLogin: [list of repos they are members of]}
+     */
+    }
 }
 
 // throttling behaviors for rate limits
@@ -329,7 +385,5 @@ function onRateLimit (retryAfter, opts, octokit) {
 function onAbuseLimit (retryAfter, opts, octokit) {
   octokit.log.warn(`Abuse detected for request ${options.method} ${options.url}`)
 }
-
-
 
 module.exports = Cherp
