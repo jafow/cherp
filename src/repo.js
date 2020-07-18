@@ -21,7 +21,7 @@ class Cherp extends CherpOctokit {
       logger: LOGGER,
       throttle: {
         onRateLimit,
-        onAbuseLimit,
+        onAbuseLimit
       },
       ...opts
     })
@@ -235,7 +235,7 @@ class Cherp extends CherpOctokit {
      * @param {String} refBranch - the name of the ref
      * @returns {Object} - the api response of the pull request
      */
-    const _msg = msg || '# summary\n hello :wave:. I am opening this PR to add a file that\'s good to have in a repo. Please feel free to ignore this.\nI\'m just a script so if I am broken please open an issue in [hackforla/github-automation](https://github.com/hackforla/github-automation).'
+    const _msg = msg || '# summary\n hello :wave:. I am opening this PR to add a file that\'s good to have in a repo. Please feel free to ignore this.\nI\'m just a script so if I am broken please open an issue in [hackforla/github-automation](https://github.com/100Automations/cherp).'
     try {
       var { data } = await this.pulls.create({
         owner: this.owner,
@@ -275,11 +275,11 @@ class Cherp extends CherpOctokit {
   }
 
   membersMissing2fa () {
-      let membersMissing2fa = this.paginate(this.orgs.listMembers, {
-        org: this.owner,
-        filter: '2fa_disabled'
-      },
-      (members) => members.data.map(member => ({login: member.login, url: member.url, html_url: member.html_url })))
+    const membersMissing2fa = this.paginate(this.orgs.listMembers, {
+      org: this.owner,
+      filter: '2fa_disabled'
+    },
+    (members) => members.data.map(member => ({ login: member.login, url: member.url, html_url: member.html_url })))
       .then((members) => {
         LOGGER.debug(`Found ${members.length} without 2fa`)
         return members
@@ -288,7 +288,7 @@ class Cherp extends CherpOctokit {
         LOGGER.error('Error: membersMissing2fa', err)
         return []
       })
-      return membersMissing2fa
+    return membersMissing2fa
   }
 
   async _orgRepos () {
@@ -296,15 +296,15 @@ class Cherp extends CherpOctokit {
      * get the list of repos belonging to org
      */
     return this.paginate('GET /orgs/{org}/repos', {
-        org: this.owner
-      },
-      (repos) => repos.data.map((repo) => ({
-        name: repo.name,
-        full_name: repo.full_name,
-        issues_url: repo.issues_url,
-        default_branch: repo.default_branch,
-        collaborators_url: repo.collaborators_url
-      })))
+      org: this.owner
+    },
+    (repos) => repos.data.map((repo) => ({
+      name: repo.name,
+      full_name: repo.full_name,
+      issues_url: repo.issues_url,
+      default_branch: repo.default_branch,
+      collaborators_url: repo.collaborators_url
+    })))
       .then((repos) => {
         LOGGER.debug(`Found ${repos.length} belonging to this github org`)
         return repos
@@ -342,9 +342,9 @@ class Cherp extends CherpOctokit {
     const orgCollaboratorMapper = this._mapOrgReposAndCollaborators(orgRepos)
     // list of pending calls to each repo to get its list of collaborators
     const promises = orgRepos.map(repo => this.paginate('GET /repos/{owner}/{repo}/collaborators', {
-        owner: this.owner,
-        repo: repo.name
-      }))
+      owner: this.owner,
+      repo: repo.name
+    }))
 
     return Promise.all(promises)
       .then((collaborators) => orgCollaboratorMapper(collaborators))
@@ -365,11 +365,37 @@ class Cherp extends CherpOctokit {
     const orgReposCollaborators = await this.orgReposCollaborators()
     const result = {}
 
-    for (let repo in orgReposCollaborators) {
-      let repoCollaborators = orgReposCollaborators[repo]
+    for (const repo in orgReposCollaborators) {
+      const repoCollaborators = orgReposCollaborators[repo]
       result[repo] = members.filter(memberToCheck => repoCollaborators.indexOf(memberToCheck.login) > -1)
     }
     return result
+  }
+
+  async openAssignedIssue (repo = '', assignee = '', issueMessage) {
+    /**
+     * @param repo - String the name of the repo to open issue on
+     * @param assignee - String the github login name to assign the issue to
+     * @param issueMessage - Object {title: String, body: String} the message to put in the issue
+     */
+    try {
+      const created = await this.issues.create({
+        owner: this.owner,
+        repo: repo,
+        title: issueMessage.title || 'Automated reminder: something needs your attention',
+        body: issueMessage.body || 'This issue was opened by 🐦 cherp 🐦.\nIf this is wrong please go to https://github.com/100Automations/cherp and open an issue.',
+        assignees: [assignee]
+      })
+      LOGGER.debug(`Created an issue on ${repo} assigned to ${assignee}`)
+      return {
+        issueNumber: created.data.number,
+        assigned: created.data.assignee.login,
+        issueUrl: created.data.url
+      }
+    } catch (err) {
+      LOGGER.error('Error: openAssignedIssue', err)
+      return []
+    }
   }
 }
 
