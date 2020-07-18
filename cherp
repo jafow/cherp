@@ -4,12 +4,12 @@ require('dotenv').config()
 
 const argv = require('minimist')(process.argv.slice(2))
 const Cherp = require('./src/repo')
-const usage = require('./src/usage')
+const {usage, version} = require('./src/usage')
 const LOGGER = require('./src/logger')
 
 async function main () {
   if (process.env.GITHUB_ORG === undefined) {
-    usage()
+    console.error('Error: Missing GITHUB_ORG environment variable')
     process.exit(1)
   }
 
@@ -20,6 +20,8 @@ async function main () {
     LOGGER.info(repos)
   } else if (argv._[0] === 'add-file') {
     await cherp.addFile(argv)
+  } else if (argv.v || argv.version) {
+    version()
   } else if (argv.h || argv.help) {
     // help
     usage()
