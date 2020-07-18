@@ -354,14 +354,23 @@ class Cherp extends CherpOctokit {
       })
   }
 
-  reposThatMembersBelongTo (members) {
+  async reposThatMembersBelongTo (members) {
     /**
      * given a list of members, for each member return a list of repos
      * that they are members of within the `GITHUB_ORG`
      * @param members - Array; a list of members objects as {login: String, url: String}
      * @returns Object; a key/value pair of { memberLogin: [list of repos they are members of]}
      */
+    LOGGER.debug('Checking members: ${members} are collaborators on organziations repos')
+    const orgReposCollaborators = await this.orgReposCollaborators()
+    const result = {}
+
+    for (let repo in orgReposCollaborators) {
+      let repoCollaborators = orgReposCollaborators[repo]
+      result[repo] = members.filter(memberToCheck => repoCollaborators.indexOf(memberToCheck.login) > -1)
     }
+    return result
+  }
 }
 
 // throttling behaviors for rate limits
