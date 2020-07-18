@@ -291,18 +291,14 @@ class Cherp extends CherpOctokit {
       return membersMissing2fa
   }
 
-  reposThatMembersBelongTo (members) {
+  async _orgRepos () {
     /**
-     * given a list of members, for each member return a list of repos
-     * that they are members of within the `GITHUB_ORG`
-     * @param members - Array; a list of members objects as {login: String, url: String}
-     * @returns Object; a key/value pair of { memberLogin: [list of repos they are members of]}
+     * get the list of repos belonging to org
      */
-    let orgRepos = this.paginate(this.orgs.listRepos, {
-        org: this.owner,
-        sort: 'updated'
+    return this.paginate('GET /orgs/{org}/repos', {
+        org: this.owner
       },
-      (repos) => repos.data.map(repo => ({
+      (repos) => repos.data.map((repo) => ({
         name: repo.name,
         full_name: repo.full_name,
         issues_url: repo.issues_url,
