@@ -15,7 +15,7 @@
     "tape": "^5.0.1"
   },
   "files": [
-    "cherp.js",
+    "cherp",
     "src/*",
     "LICENSE"
   ],
@@ -23,16 +23,19 @@
     "node": ">=12"
   },
   "bin": {
-    "cherp": "./cherp.js"
+    "cherp": "./cherp"
   },
   "scripts": {
     "test": "node tests/test.js | tap-spec",
-    "start": "./cherp.js",
+    "start": "./cherp",
     "lint": "npx standard -- "
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/100Automations/cherp"
   },
   "keywords": [
     "github",
-    "lint",
     "octokit"
   ],
   "author": "Jared Fowler - jared.a.fowler@gmail.com",
