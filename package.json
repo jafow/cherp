@@ -1,6 +1,6 @@
 {
   "name": "cherp",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "utilities for checking github repos look their best",
   "dependencies": {
     "@octokit/plugin-throttling": "^3.3.0",
