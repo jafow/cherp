@@ -324,7 +324,7 @@ class Cherp extends CherpOctokit {
      * @returns function
      */
     const result = {}
-    return function (allRepoCollaborators) {
+    return function (allReposCollaborators) {
       for (let i = 0; i < orgRepos.length; i++) {
         // zip them with org repos
         result[orgRepos[i].name] = allReposCollaborators[i].map(collaborator => collaborator.login)
@@ -336,26 +336,18 @@ class Cherp extends CherpOctokit {
   async orgReposCollaborators () {
     /**
      * a key value pair of repos and their collaborators belonging to a github org
+     * @returns Object { repoName: [list of collaborators on that repo ]}
      */
     const orgRepos = await this._orgRepos()
-    const promises = []
-    const result = {}
-
-    for (let repo of orgRepos) {
-      let p = this.paginate('GET /repos/{owner}/{repo}/collaborators', {
+    const orgCollaboratorMapper = this._mapOrgReposAndCollaborators(orgRepos)
+    // list of pending calls to each repo to get its list of collaborators
+    const promises = orgRepos.map(repo => this.paginate('GET /repos/{owner}/{repo}/collaborators', {
         owner: this.owner,
         repo: repo.name
-      })
-      promises.push(p)
-    }
+      }))
+
     return Promise.all(promises)
-      .then(allReposCollaborators => {
-        for (let i = 0; i < orgRepos.length; i++) {
-          // zip them with org repos
-          result[orgRepos[i].name] = allReposCollaborators[i].map(collaborator => collaborator.login)
-        }
-        return result
-      })
+      .then((collaborators) => orgCollaboratorMapper(collaborators))
       .catch((err) => {
         LOGGER.error('Error: orgReposCollaborators', err)
         return []
