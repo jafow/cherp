@@ -3,7 +3,7 @@
 require('dotenv').config()
 
 const argv = require('minimist')(process.argv.slice(2))
-const Cherp = require('./src/repo')
+const Cherp = require('./index')
 const {usage, version} = require('./src/usage')
 const LOGGER = require('./src/logger')
 
