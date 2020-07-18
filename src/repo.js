@@ -1,6 +1,8 @@
 const { Octokit } = require('@octokit/rest')
+const { throttling } = require('@octokit/plugin-throttling')
 const spdxLicenseList = require('spdx-license-list/simple')
 const LOGGER = require('./logger.js')
+const CherpOctokit = Octokit.plugin(throttling)
 
 /** Cherp
  * Extends the Github API client octokit/rest.js
@@ -11,12 +13,16 @@ const LOGGER = require('./logger.js')
  *    opts.githubOrg: string - the github org of repos being operated on. Overrides opts.owner
  *    opts.owner: string - the github owner of the repo being operated on. Is overridden by opts.owner
  */
-class Cherp extends Octokit {
+class Cherp extends CherpOctokit {
   constructor (opts) {
     super({
       auth: opts.GITHUB_TOKEN || process.env.GITHUB_TOKEN,
       userAgent: opts.userAgent || 'cherp',
       logger: LOGGER,
+      throttle: {
+        onRateLimit,
+        onAbuseLimit,
+      },
       ...opts
     })
     this.opts = opts
@@ -313,5 +319,21 @@ class Cherp extends Octokit {
       })
   }
 }
+
+// throttling behaviors for rate limits
+function onRateLimit (retryAfter, opts, octokit) {
+  octokit.log.warn(`Request quota exhausted for request ${options.method} ${options.url}`)
+
+  if (options.request.retryCount === 0) { // only retries once
+    octokit.log.info(`Retrying after ${retryAfter} seconds!`)
+    return true
+  }
+}
+
+function onAbuseLimit (retryAfter, opts, octokit) {
+  octokit.log.warn(`Abuse detected for request ${options.method} ${options.url}`)
+}
+
+
 
 module.exports = Cherp
