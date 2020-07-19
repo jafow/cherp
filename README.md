@@ -37,13 +37,13 @@ npm i
 ```
 
 # configuration
-Running `cherp` requires minimal configuration of `GITHUB_TOKEN`, and `GITHUB_ORG` set into a `.env` file
+Running `cherp` requires minimal configuration of `ORG_OWNER_TOKEN`, and `ORGANIZATION` set into a `.env` file
 (see [.env.example](.env.example))
-or exported to the process environment, e.g. `export GITHUB_TOKEN=<your github
+or exported to the process environment, e.g. `export ORG_OWNER_TOKEN=<your github
 personal access token>`
 
-`GITHUB_TOKEN - required`
-`GITHUB_ORG - the org or owner of a repo or set of repos`
+`ORG_OWNER_TOKEN - required`
+`ORGANIZATION - the org or owner of a repo or set of repos`
 
 [Read more here about creating a Github Personal Access
 Token](https://github.com/settings/tokens)
@@ -55,13 +55,13 @@ check-repo exposes a small command line interface aliased as :bird: `cherp` :bir
 opens a PR to my-repo with a GPL-2.0 license
 
 ### `cherp license`
-check all repos in `GITHUB_ORG` that do not have a recognizable LICENSE file
+check all repos in `ORGANIZATION` that do not have a recognizable LICENSE file
 
 ### `cherp version`
 prints the version
 
 ### `cherp mfa`
-lists any members of the `GITHUB_ORG` that have not enabled 2fa. Returns an
+lists any members of the `ORGANIZATION` that have not enabled 2fa. Returns an
 empty Array if none exist.
 
 # LICENSE

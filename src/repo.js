@@ -16,7 +16,7 @@ const CherpOctokit = Octokit.plugin(throttling)
 class Cherp extends CherpOctokit {
   constructor (opts) {
     super({
-      auth: opts.GITHUB_TOKEN || process.env.GITHUB_TOKEN,
+      auth: opts.ORG_OWNER_TOKEN || process.env.ORG_OWNER_TOKEN,
       userAgent: opts.userAgent || 'cherp',
       logger: LOGGER,
       throttle: {
@@ -26,7 +26,7 @@ class Cherp extends CherpOctokit {
       ...opts
     })
     this.opts = opts
-    this.owner = this.opts.githubOrg || this.opts.owner || process.env.GITHUB_ORG
+    this.owner = this.opts.githubOrg || this.opts.owner || process.env.ORGANIZATION
   }
 
   async getLatestCommit (repo) {
